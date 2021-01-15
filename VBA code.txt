@@ -1,0 +1,1426 @@
+
+--------------------------------------------------------------------------------------
+2020.12.09
+
+Sub chaifen()
+
+Dim sht As Worksheet
+Dim i, j, k As Integer
+Dim irow As Integer
+
+irow = Sheets(1).Range("a65536").End(xlUp).Row
+
+For i = 2 To irow
+    
+    'Create sheet and sheet name without duplication
+    k = 0
+    For Each sht In Sheets
+        If sht.Name = Sheets(1).Range("B" & i) Then
+        k = 1
+    End If
+    Next
+
+    If k = 0 Then
+    Worksheets.Add after:=Sheets(Worksheets.Count)
+    Sheets(Worksheets.Count).Name = Sheets(1).Range("B" & i)
+    End If
+
+Next i
+
+For j = 2 To Worksheets.Count
+    'Use Filter and Paste contents to each sheet
+    Sheets(1).Range("a1:k" & irow).AutoFilter field:=2, Criteria1:=Sheets(j).Name
+    Sheets(1).Range("a1:k" & irow).Copy Sheets(j).Range("a1")
+
+Next j
+
+End Sub
+--------------------------------------------------------------------------------------
+2020.12.10
+
+1) Change Color of the entirerow once selected
+Worksheet->SelectionChange
+
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+
+Cells.Interior.Pattern = xlNone
+Selection.EntireRow.Interior.Color = 65535
+
+End Sub
+
+2) Copy File and creat Filename as current time
+Workbook -> BeforeSave
+
+ThisWorkbook.SaveCopyAs "C:\Users\cao.y.9\OneDrive - Procter and Gamble\Desktop\VBA Practice\" & Format(Now(), "yyyymmddhhss") & ".xlsx"
+
+3) shushu
+
+Sub shushuxiaodongwu()
+
+Dim i As Integer
+
+For i = 2 To Sheets.Count
+
+    k = k + WorksheetFunction.CountA(Sheets(i).Range("a:a")) - 1
+
+    Sheets("Bangge shu dongwu").Range("a1") = k
+
+Next
+End Sub
+--------------------------------------------------------------------------------------
+2020.12.11
+
+Open the Sap Workbook.
+Delete the 1st column
+Delete the 1st row for i times. i refers to the number of blank cells from Top in colomn A.
+Delete the completely blank columns or columns with only title
+Delete the completely Blank row from Top to Bottom
+
+----
+Sum up the column with title 仕切数量 and 仕切金額
+Print the value to total to another workbook.
+
+
+
+------------------------------------------------------------------------------------
+2020.12.14
+
+1)我的生日是1991年5月17日 -> 1991年5月17日
+
+=MID(F9,FIND("是",F9)+1,10)
+
+2)用LEN和SUBSTITUTE函数求出某个关键词在文本中的出现次数
+先把关键词全部替换为空，然后用原文减去替换后的文本，得出所有关键词的累加长度。
+再用所有关键词的累加长度除以关键词长度，得出关键词出现次数。
+
+
+WOOS
+Introduce from the big picture
+Global situation/Why Japan is on the right track/How do we Calculate the WOOS?
+
+
+------------------------------------------------------------------------------------
+2020.12.15
+
+Sub skufinder()
+
+Dim i, j, k As Integer
+
+irow = Sheets(3).Range("a65536").End(xlUp).Row
+
+Sheets(1).Range("C5:C10").ClearContents
+Sheets(1).Range("B13:C65536").ClearContents
+
+Sheets(1).Range("C5") = WorksheetFunction.VLookup(Sheets(1).Range("C2"), Sheets(2).Range("B2:J65536"), 9, False)
+Sheets(1).Range("C6") = WorksheetFunction.VLookup(Sheets(1).Range("C2"), Sheets(2).Range("B2:J65536"), 2, False)
+Sheets(1).Range("C7") = WorksheetFunction.VLookup(Sheets(1).Range("C2"), Sheets(2).Range("B2:J65536"), 3, False)
+Sheets(1).Range("C8") = WorksheetFunction.VLookup(Sheets(1).Range("C2"), Sheets(2).Range("B2:J65536"), 5, False)
+Sheets(1).Range("C9") = WorksheetFunction.VLookup(Sheets(1).Range("C2"), Sheets(2).Range("B2:J65536"), 7, False)
+Sheets(1).Range("C10") = WorksheetFunction.VLookup(Sheets(1).Range("C2"), Sheets(2).Range("B2:J65536"), 6, False)
+
+Sheets(3).Range("a7:m" & irow).AutoFilter field:=1, Criteria1:=Sheets(1).Range("C2")
+Sheets(3).Range("b8:b" & irow).Copy Sheets(1).Range("b13")
+Sheets(3).Range("m8:m" & irow).Copy Sheets(1).Range("c13")
+
+
+End Sub
+
+Sub ClearInfo()
+
+Sheets(1).Range("C2").ClearContents
+Sheets(1).Range("C5:C10").ClearContents
+Sheets(1).Range("B13:C65536").ClearContents
+
+End Sub
+
+
+------------------------------------------------------------------------------------
+2020.12.16
+
+1)
+Sub duowenjianhebing()
+
+Dim i As Integer
+Dim str As String
+Dim wb As Workbook
+
+str = Dir("C:\Users\cao.y.9\OneDrive - Procter and Gamble\Desktop\Combineworkbook\*.xls*")
+
+For i = 1 To 100
+
+    Set wb = Workbooks.Open("C:\Users\cao.y.9\OneDrive - Procter and Gamble\Desktop\Combineworkbook\" & str)
+    
+    wb.Sheets(1).Copy after:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
+    
+    ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count).Name = Split(wb.Name, ".")(0)
+    
+    str = Dir
+    
+    If str = "" Then
+        Exit For
+    End If
+
+    wb.Close
+   
+Next
+End Sub
+
+2)
+Sub testfind()
+Dim rng As Range
+Set rng = Sheets(2).Range("B:B").Find(Sheets(2).Range("E2"))
+    If Not rng Is Nothing Then
+        Sheets(2).Range("F2") = rng.Offset(0, -1)
+    End If
+End Sub
+
+------------------------------------------------------------------------------------
+2020.12.19
+
+1)
+
+Sub xieru(i As Integer)
+
+With Sheets(1)
+
+    'Clear all the options first when enter the question
+    .OptionButton1.Value = False
+    .OptionButton2.Value = False
+    .OptionButton3.Value = False
+    .OptionButton4.Value = False
+
+    'Input all the information
+    .Label2.Caption = i
+    .Label3.Caption = Sheets(2).Range("a" & i + 1)
+    .Label4.Caption = Sheets(2).Range("b" & i + 1)
+    .Label5.Caption = Sheets(2).Range("c" & i + 1)
+    .Label6.Caption = Sheets(2).Range("d" & i + 1)
+    .Label7.Caption = Sheets(2).Range("e" & i + 1)
+    
+    'Hide Options that we don't use
+    If .Label6.Caption = "" Then
+    .OptionButton3.Visible = False
+    Else: .OptionButton3.Visible = True
+    End If
+    
+    If .Label7.Caption = "" Then
+    .OptionButton4.Visible = False
+    Else: .OptionButton4.Visible = True
+    End If
+    
+    'Find previous answer
+    If Sheets(2).Range("G" & i + 1).Value = "A" Then
+    .OptionButton1.Value = True
+    ElseIf Sheets(2).Range("G" & i + 1).Value = "B" Then
+    .OptionButton2.Value = True
+    ElseIf Sheets(2).Range("G" & i + 1).Value = "C" Then
+    .OptionButton3.Value = True
+    ElseIf Sheets(2).Range("G" & i + 1).Value = "D" Then
+    .OptionButton4.Value = True
+    End If
+
+End With
+
+End Sub
+
+2)
+
+Private Sub CommandButton1_Click()
+
+Call xieru(1)
+
+SpinButton1.Value = 1
+
+End Sub
+
+Private Sub CommandButton2_Click()
+
+Call xieru(8)
+
+SpinButton1.Value = 8
+
+End Sub
+
+Private Sub OptionButton1_Click()
+
+Sheets(2).Range("G" & Sheets(1).SpinButton1.Value + 1) = "A"
+
+End Sub
+
+Private Sub OptionButton2_Click()
+Sheets(2).Range("G" & Sheets(1).SpinButton1.Value + 1) = "B"
+
+End Sub
+
+Private Sub OptionButton3_Click()
+Sheets(2).Range("G" & Sheets(1).SpinButton1.Value + 1) = "C"
+
+End Sub
+
+Private Sub OptionButton4_Click()
+Sheets(2).Range("G" & Sheets(1).SpinButton1.Value + 1) = "D"
+
+End Sub
+
+Private Sub SpinButton1_Change()
+
+Call xieru(Sheets(1).SpinButton1.Value)
+
+End Sub
+
+3)
+
+Private Sub CommandButton3_Click()
+
+Dim k, l As Integer
+
+k = 0
+
+For l = 2 To 9
+
+If Sheets(2).Range("G" & l) = Sheets(2).Range("F" & l) Then
+    k = k + 1
+   End If
+   
+Next
+
+MsgBox "You have got" & k & "out of 8!"
+
+End Sub
+
+
+------------------------------------------------------------------------------------
+2020.12.20
+
+'Find Member Information
+
+Private Sub CommandButton1_Click()
+Dim rng As Range
+
+'用find方法做
+Set rng = Sheet1.Range("i1:i1000").Find(Me.TextBox1.Value)
+If rng Is Nothing Then
+    MsgBox "无该用户"
+Else
+    Me.Label3.Caption = rng.Offset(0, -6)
+    Me.Label4.Caption = rng.Offset(0, -5)
+    Me.Label6.Caption = rng.Offset(0, -4)
+    Me.Label8.Caption = rng
+    Me.Label10.Caption = rng.Offset(0, -3)
+    Me.Label12.Caption = rng.Offset(0, -2)
+    Me.Label13.Caption = rng.Offset(0, -1)
+End If
+
+End Sub
+
+Private Sub ListBox1_Click()
+Me.TextBox1 = Me.ListBox1.Value
+Me.ListBox1.Visible = False
+End Sub
+
+Private Sub TextBox1_Change()
+Dim arr()
+If Len(TextBox1.Value) >= 4 Then
+    Me.ListBox1.Clear
+    arr = Sheet1.Range("i2:i" & Sheet1.Range("a65536").End(xlUp).Row)
+    
+    For i = LBound(arr) To UBound(arr)
+        If InStr(arr(i, 1), Me.TextBox1.Value) > 0 Then
+            Me.ListBox1.AddItem arr(i, 1)
+        End If
+    Next
+    If Me.ListBox1.ListCount > 0 Then
+    Me.ListBox1.Visible = True
+    End If
+Else
+    Me.ListBox1.Clear
+    Me.ListBox1.Visible = False
+
+End If
+End Sub
+
+Private Sub UserForm_Activate()
+
+End Sub
+
+
+------------------------------------------------------------------------------------
+2020.12.21
+
+1) Let user get one file and copy
+
+Sub getfile()
+
+Dim str As String
+Dim wb As Workbook
+
+str = Application.GetOpenFilename("Excelsheet,*.xls*,CSVsheet,*.csv", 1)
+
+If str <> "False" Then
+
+    Set wb = Workbooks.Open(str)
+            wb.Sheets(1).Copy after:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
+            ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count).Name = "SAP"
+        wb.Close
+
+End If
+
+End Sub
+
+2) Let user get multiple file
+
+Sub getmultiplefile()
+
+Dim arr()
+Dim wb As Workbook
+Dim sht As Worksheet
+
+arr = Application.GetOpenFilename("Excelsheet,*.xls*,CSVsheet,*.csv", 1, , , True)
+
+If arr(1) <> "False" Then
+    For i = LBound(arr) To UBound(arr)
+        Set wb = Workbooks.Open(arr(i))
+        
+        For Each sht In wb.Sheets
+            sht.Copy after:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
+ 
+        wb.Close
+    Next
+End If
+
+End Sub
+
+
+------------------------------------------------------------------------------------
+2020.12.23
+
+
+Sub cleanfile()
+
+Call deletetoprows
+
+Call deleteleftcolumns
+
+Call deleteblankcolumns
+
+End Sub
+
+
+Sub deletetoprows()
+
+'Clean Top Rows until there is a value in column B
+Do While Range("b1").Value = ""
+
+    Sheets("SAP").Range("b1").EntireRow.Delete
+
+Loop
+End Sub
+
+
+Sub deleteleftcolumns()
+
+'Clean Left columns until there is a value in column A
+Do While Range("a1").Value = ""
+
+    Sheets("SAP").Range("a1").EntireColumn.Delete
+
+Loop
+End Sub
+
+Sub deleteblankcolumns()
+
+Dim lastcolumn As Long
+
+'Clean blank column only with title
+
+lastcolumn = Sheets(2).Cells(1, Columns.Count).End(xlToLeft).Column
+
+Do Until lastcolumn = 0
+
+    If WorksheetFunction.CountA(Sheets(2).Columns(lastcolumn)) = 1  or WorksheetFunction.CountA(Sheets(2).Columns(lastcolumn)) = 0 Then
+        Sheets(2).Columns(lastcolumn).Delete
+    End If
+    
+    lastcolumn = lastcolumn - 1
+    
+Loop
+End Sub
+
+2）
+
+Sub getandclean()
+
+Dim str As String
+Dim wb As Workbook
+
+str = Application.GetOpenFilename("Excelsheet,*.xls*,CSVsheet,*.csv", 1)
+
+If str <> "False" Then
+
+    Set wb = Workbooks.Open(str)
+    Call cleanfile
+
+End If
+
+End Sub
+
+3)
+
+Sub addchart()
+
+Dim shp As Shape
+Dim lastrow As Integer
+
+lastrow = Sheets(1).Range("c65536").End(xlUp).Row
+
+Set shp = Sheets(1).Shapes.addchart
+    shp.chart.SetSourceData Sheets(1).Range("B12 : C" & lastrow)
+    shp.chart.ChartType = xlLine
+   
+
+End Sub
+
+
+------------------------------------------------------------------------------------
+2020.12.24
+
+1)
+Sub shijian()
+Dim d As Date
+Dim m As Long
+
+d = Now 'Date/Time is also okay
+
+m = Month(d) 'Year()/Day() is also Okay
+
+MsgBox m
+
+End Sub
+
+2)
+
+Sub shijian()
+
+ Cells(3, 4) = DateDiff("d", Cells(3, 2), Cells(3, 3)) & "天"
+ 
+End Sub
+
+3)
+
+Sub shijian()
+
+ Cells(3, 4) = DateAdd("d", Cells(3, 3), Cells(3, 2))
+
+End Sub
+
+4)
+
+Sub jisuanshijian()
+
+Dim startt As Long
+
+startt = Timer
+
+MsgBox "You have spent" & Timer - startt
+
+End Sub
+
+5)
+
+On Error GoTo myError
+
+...
+
+Exit Sub
+
+myError:
+
+MsgBox "Please input SKU JAN first"
+
+
+------------------------------------------------------------------------------------
+2020.12.26
+
+1)
+Sub columncreator()
+
+Dim i, j, k As Integer
+Dim lastcolumn, lastrow As Integer
+
+'Find the Last Column
+lastcolumn = Sheets(2).UsedRange.Columns.Count
+'Find the last Row
+lastrow = Sheets(2).Range("a65536").End(xlUp).Row
+
+'Find the Ship-to Column, insert a new column after it, Name the new Column, fill the blank based on the Ship-to Column
+For i = lastcolumn To 1 Step -1
+
+    If Sheets(2).Cells(1, i).Value = "Ship-to(出荷先)名" Then
+    
+    Sheets(2).Columns(i + 1).Insert
+    
+    Sheets(2).Cells(1, i + 1).Value = "Ship-to"
+    
+        For j = 2 To lastrow
+        
+            Sheets(2).Cells(j, i + 1) = Right(Sheets(2).Cells(j, i), 4)
+    
+        Next
+        
+    End If
+    
+Next
+
+End Sub
+
+
+2)
+
+Sub pivotcreator()
+
+Dim Data_sht As Worksheet
+Dim Pivot_sht As Worksheet
+Dim startpoint As Range
+Dim DataRange As Range
+Dim NewRange As String
+
+Worksheets.Add after:=Sheets(Worksheets.Count)
+Sheets(Worksheets.Count).Name = "PIVOT"
+
+Set Data_sht = Sheets("SAP")
+Set Pivot_sht = Sheets("PIVOT")
+
+'Define the dynamic range
+Set startpoint = Data_sht.Range("A1")
+Set DataRange = Data_sht.Range(startpoint, startpoint.SpecialCells(xlLastCell))
+
+'Make sure every column in data set has a heading and is not blank (error prevention)
+If WorksheetFunction.CountBlank(DataRange.Rows(1)) > 0 Then
+    Pivot_sht.Delete
+    MsgBox "One of your data columns has a blank heading!"
+    Exit Sub
+End If
+
+'Input data to Pivot sheet
+ActiveWorkbook.PivotCaches.Create(SourceType:=xlDatabase, SourceData:= _
+DataRange, Version:=6).CreatePivotTable TableDestination:= _
+Pivot_sht.Cells(3, 1), TableName:="PivotTable1", DefaultVersion:=6
+  
+'Ensure Pivot Table is Refreshed
+Pivot_sht.PivotTables("PivotTable1").RefreshTable
+  
+'Select Fields
+With ActiveSheet.PivotTables("PivotTable1").PivotFields("Ship-to(出荷先)名")
+    .Orientation = xlRowField
+    .Position = 1
+End With
+    
+ActiveSheet.PivotTables("PivotTable1").AddDataField ActiveSheet.PivotTables( _
+"PivotTable1").PivotFields("GI数量/"), "Sum of GI数量/", xlSum
+
+With ActiveSheet.PivotTables("PivotTable1").PivotFields("ｶﾃｺﾞﾘｰ")
+    .Orientation = xlRowField
+    .Position = 2
+End With
+    
+'Complete Message
+MsgBox "You have successfully created the Pivot Table!"
+
+End Sub
+
+------------------------------------------------------------------------------------
+2020.12.27
+
+'Select Rowfields
+With ActiveSheet.PivotTables("PivotTable1").PivotFields("Ship-to(出荷先)名")
+    .Orientation = xlRowField
+    .Position = 1
+End With
+
+With ActiveSheet.PivotTables("PivotTable1").PivotFields("ｶﾃｺﾞﾘｰ")
+    .Orientation = xlRowField
+    .Position = 2
+End With
+
+'Select Columnfields
+With ActiveSheet.PivotTables("PivotTable1").PivotFields("納入")
+    .Orientation = xlColumnField
+    .Position = 1
+End With
+    
+'Set functions
+ActiveSheet.PivotTables("PivotTable1").AddDataField ActiveSheet.PivotTables( _
+"PivotTable1").PivotFields("GI数量/"), "Sum of GI数量/", xlSum
+
+
+------------------------------------------------------------------------------------
+2020.12.28
+
+1)
+
+Sub getcut()
+
+Dim str As String
+Dim wbmain As Workbook
+Dim wbcut As Workbook
+
+On Error Resume Next
+
+Set wbmain = ThisWorkbook
+
+str = Application.GetOpenFilename("Excelsheet,*.xls*,CSVsheet,*.csv", 1)
+
+If str <> "False" Then
+
+    Set wbcut = Workbooks.Open(str)
+    
+End If
+
+    wbcut.Sheets(1).Copy after:=wbmain.Sheets(wbmain.Sheets.Count)
+    
+    wbmain.Sheets(wbmain.Sheets.Count).Name = "Top Cut Data"
+    
+    wbcut.Close
+    
+    Call valuecleaner
+
+
+End Sub
+
+2)
+
+Sub valuecleaner()
+
+Dim i, j, k As Integer
+Dim lastcolumn As Long
+Dim lastrow As Long
+Dim cutsht As Worksheet
+
+Set cutsht = Sheets("Top Cut Data")
+
+Set startpoint = cutsht.Range("A1")
+
+lastrow = cutsht.Cells(cutsht.Rows.Count, startpoint.Column).End(xlUp).Row
+lastcolumn = cutsht.Cells(startpoint.Row, cutsht.Columns.Count).End(xlToLeft).Column
+
+For i = 1 To lastcolumn
+
+    If cutsht.Cells(3, i).Value = "FPC" Then
+    
+        cutsht.Columns(i + 1).Insert
+        
+        cutsht.Cells(3, i + 1).Value = "FPC2"
+    
+        For j = 4 To lastrow
+        
+           cutsht.Cells(j, i + 1).Value = cutsht.Cells(j, i).Value * 1
+           cutsht.Cells(j, i).Value = cutsht.Cells(j, i + 1).Value
+        
+        Next
+        
+        cutsht.Columns(i + 1).Delete
+        
+        
+    End If
+    
+Next
+
+End Sub
+
+3)
+
+
+Sub getorder()
+
+Dim str As String
+Dim wbmain As Workbook
+Dim wborder As Workbook
+Dim ordersht As Worksheet
+
+On Error Resume Next
+
+Set wbmain = ThisWorkbook
+
+str = Application.GetOpenFilename("Excelsheet,*.xls*,CSVsheet,*.csv", 1)
+
+If str <> "False" Then
+
+    Set wborder = Workbooks.Open(str)
+    
+End If
+
+    wborder.Sheets(1).Copy after:=wbmain.Sheets(wbmain.Sheets.Count)
+    
+    wbmain.Sheets(wbmain.Sheets.Count).Name = "Order Data"
+    
+    Set ordersht = wbmain.Sheets("Order Data")
+    
+    With ordersht.Range("B:D")
+    .NumberFormat = "0"
+    .Value = .Value
+    End With
+    
+    ordersht.Range("a1").Select
+    
+    wborder.Close
+
+End Sub
+
+4)
+
+    ActiveSheet.PivotTables("PivotTable1").RowAxisLayout xlTabularRow
+    Columns("A:A").EntireColumn.AutoFit
+    Columns("C:C").EntireColumn.AutoFit
+    
+    ActiveSheet.PivotTables("PivotTable1").PivotFields("FPC").Subtotals = Array( _
+        False, False, False, False, False, False, False, False, False, False, False, False)
+    ActiveSheet.PivotTables("PivotTable1").PivotFields("JAN").Subtotals = Array( _
+        False, False, False, False, False, False, False, False, False, False, False, False)
+    ActiveSheet.PivotTables("PivotTable1").PivotFields("Order No").Subtotals = _
+        Array(False, False, False, False, False, False, False, False, False, False, False, False)
+    ActiveSheet.PivotTables("PivotTable1").PivotFields("Product Name").Subtotals = _
+        Array(False, False, False, False, False, False, False, False, False, False, False, False)
+    ActiveSheet.PivotTables("PivotTable1").PivotFields("R/S").Subtotals = Array( _
+        False, False, False, False, False, False, False, False, False, False, False, False)
+    ActiveSheet.PivotTables("PivotTable1").PivotFields("RDD").Subtotals = Array( _
+        False, False, False, False, False, False, False, False, False, False, False, False)
+    ActiveSheet.PivotTables("PivotTable1").PivotFields("Order").Subtotals = Array( _
+        False, False, False, False, False, False, False, False, False, False, False, False)
+    ActiveSheet.PivotTables("PivotTable1").PivotFields("Cuts").Subtotals = Array( _
+        False, False, False, False, False, False, False, False, False, False, False, False)
+
+
+
+------------------------------------------------------------------------------------
+2020.12.29
+
+Sub pivotfilternew()
+
+Dim pivotsht As Worksheet
+Set pivotsht = Sheets("PIVOT")
+Dim cutsht As Worksheet
+Set cutsht = Sheets("Top Cut Data")
+Dim ptb As PivotTable
+Set ptb = pivotsht.PivotTables("PivotTable1")
+Dim fld As PivotField
+Set fld = ptb.PivotFields("FPC")
+Dim PTItm  As PivotItem
+
+    For Each PTItm In fld.PivotItems
+        If WorksheetFunction.CountIf(cutsht.Range("a4:a13"), PTItm) > 0 Then
+            PTItm.Visible = True
+        Else
+            PTItm.Visible = False
+        End If
+    Next
+
+End Sub
+
+------------------------------------------------------------------------------------
+2020.12.30
+
+1)
+
+dim t
+Dim cutrange As Range
+Set cutrange = cutsht.Range("a4:a13")
+Dim itemarr()
+
+t = Timer
+
+itemarr = pivotsht.Range("B6:B772")
+
+    For i = LBound(itemarr) To UBound(itemarr)
+        If IsError(Application.Match(itemarr(i, 1), cutrange, 0)) Then
+            fld.PivotItems(i).Visible = False
+        End If
+    Next
+
+MsgBox Timer - t
+
+2)
+
+Sub leijia()
+
+Dim i, k, j As Long
+Dim t
+Dim str As String
+Dim arr()
+
+t = Timer
+
+'Set a variable
+str = Range("f2")
+
+'Set a array
+arr = Range("a1:b200")
+
+'We don't need range in for loop anymore
+For i = 2 To 200
+
+    If arr(i, 1) = str Then
+    
+        k = k + arr(i, 2)
+    
+    End If
+
+Next
+
+Range("G2") = k
+
+MsgBox Timer - t
+
+End Sub
+
+3)
+
+MsgBox "If you want to get new Cut Data," & Chr(13) & "please delete current Top Cut Data sheet first!"
+
+4)
+
+Dim topcutamount As Variant
+
+topcutamount = Application.InputBox("How many CUT SKUs you wanna check?", Type:=1)
+
+If topcutamount = "False" Then
+    Exit Sub
+    ElseIf topcutamount < 0 Then
+    MsgBox "Please Input correct SKU amount!"
+    Exit Sub
+End If
+
+' loop through all Pivot Items in "FPC" Pivot field
+    For Each PTItm In fld.PivotItems
+        If WorksheetFunction.CountIf(cutsht.Range("a4:a" & topcutamount + 3), PTItm) > 0 Then
+            PTItm.Visible = True
+        Else
+            PTItm.Visible = False
+        End If
+    Next
+    
+pivotsht.Select
+MsgBox "You have done the filtering!"
+
+
+------------------------------------------------------------------------------------
+2020.12.31
+
+
+Sub deleteall()
+Dim sht As Worksheet
+Dim yn As Integer
+
+yn = MsgBox("Are you sure you want to delete all current data?", vbYesNo + vbQuestion)
+
+If yn = vbNo Then
+
+Exit Sub
+
+End If
+
+Application.DisplayAlerts = False
+
+For Each sht In Worksheets
+
+    If sht.Name <> "Dashboard" Then
+
+    sht.Delete
+    
+    End If
+    
+Next
+
+Application.DisplayAlerts = True
+
+End Sub
+
+
+------------------------------------------------------------------------------------
+2021.1.1
+
+
+1)
+
+cutsht.Cells(j, i + 5) = WorksheetFunction.Rank(cutsht.Cells(j, 5), myrange)
+
+2)
+
+Sub sortingtest()
+
+Dim cutsht As Worksheet
+Dim startpoint As Range
+Dim lastrow As Long
+Dim lastcolumn As Long
+Dim SortingRange As Range
+
+Set cutsht = Sheets("Top Cut Data")
+Set startpoint = cutsht.Range("a2")
+
+'Define the dynamic range
+lastrow = cutsht.Cells(cutsht.Rows.Count, startpoint.Column).End(xlUp).Row
+lastcolumn = cutsht.Cells(startpoint.Row, cutsht.Columns.Count).End(xlToLeft).Column
+
+Set SortingRange = cutsht.Range(startpoint, cutsht.Cells(lastrow, lastcolumn))
+
+SortingRange.Sort key1:=cutsht.Range("E2"), order1:=xlDescending
+
+End Sub
+
+------------------------------------------------------------------------------------
+2021.1.3 format conditions
+
+Sub highlightsku()
+
+    With Worksheets("Top Cut Data").Range("F4:F100")
+        .FormatConditions.Delete
+        .FormatConditions.Add Type:=xlCellValue, Operator:=xlLess, Formula1:="81%"
+        .FormatConditions(1).Interior.Color = vbYellow
+
+    End With
+
+End Sub
+
+------------------------------------------------------------------------------------
+2021.1.4
+
+1) Create WorkSheet without duplication
+
+    
+    For Each sht In Worksheets
+        If sht.Name = "Top Cut Data" Then
+            k = 1
+        End If
+    Next
+    
+    If k = 0 Then
+    
+        wbmain.Sheets(wbmain.Sheets.Count).Name = "Top Cut Data"
+    
+        Else: GoTo Errorhandler
+    
+    End If
+
+2) Use dictionary to summarize data
+
+Sub dictest()
+
+Dim i As Integer
+Dim myarr()
+
+    Sheets(Sheets.Count).Select
+    
+    Set mydic = CreateObject("Scripting.Dictionary")
+    myarr = Range("a1").CurrentRegion.Value
+        For i = 2 To UBound(myarr)
+            mydic(myarr(i, 1)) = mydic(myarr(i, 1)) + myarr(i, 2)
+        Next
+    [e:f].Clear
+    Range("a1:b1").Copy Range("e1")
+    Range("e2").Resize(UBound(mydic.keys) + 1, 1) = Application.Transpose(mydic.keys)
+    Range("f2").Resize(UBound(mydic.keys) + 1, 1) = Application.Transpose(mydic.items)
+
+End Sub
+
+3) chuancantest
+
+Sub chuancantest(rng As Range)
+
+Dim cel As Range
+Dim sht As Worksheet
+
+    For Each cel In rng
+        k = 0
+
+        For Each sht In Worksheets
+            If sht.Name = cel.Value Then
+                k = 1
+            End If
+        Next sht
+        
+        If k = 0 Then
+            Sheets.Add after:=Sheets(Sheets.Count)
+            Sheets(Sheets.Count).Name = cel.Value
+        End If
+    Next cel
+        
+End Sub
+
+Sub chuancanjianbiaotest()
+
+Call chuancantest(Sheets("1").Range("A1:A4"))
+
+End Sub
+
+------------------------------------------------------------------------------------
+2021.1.5
+
+k = 0
+
+For Each sht In Worksheets
+    If sht.Name = "Top Cut Data" Then
+        k = 1
+    End If
+Next
+
+For Each sht1 In Worksheets
+    If sht1.Name = "Order Data" Then
+        k = k + 1
+    End If
+Next
+
+If k = 2 Then
+...
+Endif
+
+------------------------------------------------------------------------------------
+2021.1.6
+
+Sub moneycount()
+    Dim str As String
+    Dim wb As Workbook
+    Dim thisworkbook As Workbook
+    Dim i, j, k As Long
+    Dim lastrow As Integer
+    Dim lastcolumn As Integer
+
+    Set thisworkbook = ActiveWorkbook
+
+    str = Application.GetOpenFilename("Excelsheet,*.xls*,CSVsheet,*.csv", 1)
+
+    If str <> "False" Then
+
+        Set wb = Workbooks.Open(str)
+        lastrow = wb.Sheets(1).Range("a65536").End(xlUp).Row
+        lastcolumn = wb.Sheets(1).UsedRange.Columns.Count
+    
+        For i = 1 To lastcolumn
+    
+            If Cells(1, i).Value = "仕切金額" Then
+                For j = 2 To lastrow
+                    k = k + Cells(j, i)
+                Next
+            End If
+        Next
+    
+        thisworkbook.Sheets(1).Range("J3").Value = k
+    
+    End If
+
+End Sub
+
+------------------------------------------------------------------------------------
+2021.1.7
+
+1) Set public workbook
+Public wb As Workbook
+Public thisworkbook As Workbook
+
+or
+
+sub1
+Public str as string
+sub2
+Dim wb As Workbook
+Set wb = Workbooks.Open(str)
+
+2) Go back to dashboard when job is done
+thisworkbook.Activate
+thisworkbook.Worksheets(1).Select
+
+------------------------------------------------------------------------------------
+2021.1.8
+
+1) My first WebScrabing VBA
+
+Option Explicit
+
+Sub webscrabingtest()
+
+Dim IEObject As InternetExplorer
+
+'Create a new instance of the internet explorer application
+Set IEObject = New InternetExplorer
+    
+    'Make sure the application is visible
+    IEObject.Visible = True
+    
+    'Navigate to a url
+    IEObject.navigate Url:="https://shop.nestle.jp/front/contents/p_g/"
+    
+    'Wail till the page is finished loading before moving to the next section of code.
+    Do While IEObject.Busy = True Or IEObject.readyState <> READYSTATE_COMPLETE
+    
+        Application.Wait Now + TimeValue("00:00:01")
+    
+    Loop
+    
+    'Print the URL that we are currently at
+    Debug.Print IEObject.LocationURL
+    
+    'Get the HTML Document for the page
+    Dim IEDocument As HTMLDocument
+    Set IEDocument = IEObject.document
+    
+    'Grab a HTML elements collection
+    Dim IEelements As IHTMLElementCollection
+    Dim IEelements1 As IHTMLElementCollection
+    Set IEelements = IEDocument.getElementsByClassName("itemsList__name")
+    Set IEelements1 = IEDocument.getElementsByClassName("itemsList__price")
+    Dim cnt As Long
+    cnt = IEelements.Length
+    Debug.Print cnt
+    
+    'Grab a specific element
+    Dim i As Long
+    On Error Resume Next
+    For i = 1 To cnt
+        ThisWorkbook.Sheets(1).Cells(i, 1) = IEelements.Item(i).innerText
+        ThisWorkbook.Sheets(1).Cells(i, 2) = IEelements1.Item(i).innerText
+    Next
+    
+    MsgBox "Scrabing is finished!"
+
+End Sub
+
+2) get number
+
+=LEFT(B2,FIND("円（税込）",B2)-1)*1
+
+3)
+
+    Dim IEelementname As IHTMLElementCollection
+    Set IEelementname = IEelements(1).getElementsByClassName("itemsList__name")
+    
+    Dim IEelementprice As IHTMLElementCollection
+    Set IEelementprice = IEelements(1).getElementsByClassName("itemsList__price")
+    
+    Debug.Print IEelementname.Item(0).innerText
+    Debug.Print IEelementprice.Item(0).innerText
+
+4)
+
+Option Explicit
+
+Sub webscrabingtest()
+
+Dim IEObject As InternetExplorer
+
+'Create a new instance of the internet explorer application
+Set IEObject = New InternetExplorer
+    
+    'Make sure the application is visible
+    IEObject.Visible = True
+    
+    'Navigate to a url
+    IEObject.navigate Url:="https://shop.nestle.jp/front/contents/p_g/"
+    
+    'Wail till the page is finished loading before moving to the next section of code.
+    Do While IEObject.Busy = True Or IEObject.readyState <> READYSTATE_COMPLETE
+    
+        Application.Wait Now + TimeValue("00:00:01")
+    
+    Loop
+    
+    'Print the URL that we are currently at
+    Debug.Print IEObject.LocationURL
+    
+    'Get the HTML Document for the page
+    Dim IEDocument As HTMLDocument
+    Set IEDocument = IEObject.document
+    
+    'Grab a HTML elements collection
+    Dim IEelements As IHTMLElementCollection
+    Set IEelements = IEDocument.getElementsByClassName("itemsList__box")
+    
+    
+    Debug.Print IEelements(1).getElementsByClassName("itemsList__name").Item(0).innerText
+    
+
+End Sub
+
+5)
+
+Option Explicit
+
+Sub webscrabingtest()
+
+Dim IEObject As InternetExplorer
+
+'Create a new instance of the internet explorer application
+Set IEObject = New InternetExplorer
+    
+    'Make sure the application is visible
+    IEObject.Visible = True
+    
+    'Navigate to a url
+    IEObject.navigate Url:="https://shop.nestle.jp/front/contents/p_g/"
+    
+    'Wail till the page is finished loading before moving to the next section of code.
+    Do While IEObject.Busy = True Or IEObject.readyState <> READYSTATE_COMPLETE
+    
+        Application.Wait Now + TimeValue("00:00:01")
+    
+    Loop
+    
+    'Print the URL that we are currently at
+    Debug.Print IEObject.LocationURL
+    
+    'Get the HTML Document for the page
+    Dim IEDocument As HTMLDocument
+    Set IEDocument = IEObject.document
+    
+    'Grab a HTML elements collection
+    Dim IEelements As IHTMLElementCollection
+    Set IEelements = IEDocument.getElementsByClassName("itemsList__box")
+    
+    Dim cnt As Integer
+    cnt = IEelements.Length - 1
+    
+    Dim i As Integer
+    
+    For i = 1 To cnt
+    
+    Debug.Print IEelements(i).getElementsByClassName("itemsList__name").Item(0).innerText
+    
+    Next
+    
+End Sub
+
+
+------------------------------------------------------------------------------------
+2021.1.9
+
+
+1)
+
+Option Explicit
+
+Sub webscrabingtest()
+
+Dim IEObject As InternetExplorer
+
+'Create a new instance of the internet explorer application
+Set IEObject = New InternetExplorer
+    
+    'Make sure the application is visible
+    IEObject.Visible = True
+    
+    'Navigate to a url
+    IEObject.navigate Url:="https://shop.nestle.jp/front/contents/p_g/"
+    
+    'Wail till the page is finished loading before moving to the next section of code.
+    Do While IEObject.Busy = True Or IEObject.readyState <> READYSTATE_COMPLETE
+    
+        Application.Wait Now + TimeValue("00:00:01")
+    
+    Loop
+    
+    'Print the URL that we are currently at
+    Debug.Print IEObject.LocationURL
+    
+    'Get the HTML Document for the page
+    Dim IEDocument As HTMLDocument
+    Set IEDocument = IEObject.document
+    
+    'Grab a HTML elements collection
+    Dim IEelements As IHTMLElementCollection
+    Set IEelements = IEDocument.getElementsByClassName("itemsList__box")
+    
+    Dim cnt As Integer
+    cnt = IEelements.Length - 1
+    
+    Dim i As Integer
+    Dim newcolumn As Integer
+    
+    newcolumn = Sheets(1).UsedRange.Columns.Count + 1
+    
+    For i = 1 To cnt
+    
+    'Sheets(1).Cells(i, 1) = IEelements(i).getElementsByClassName("itemsList__name").Item(0).innerText
+     Sheets(1).Cells(i, newcolumn) = IEelements(i).getElementsByClassName("itemsList__price").Item(0).innerText
+    
+    Next
+    
+End Sub
+
+
+2)
+Sub Ariel()
+
+Dim i As Integer
+Dim j As Integer
+Dim lastrow As Long
+Dim lastrowAriel As Long
+Dim lastcolumn As Long
+Dim lastcolumnAriel As Long
+Dim startpoint As Range
+Dim DataRange As Range
+Dim Data_sht As Worksheet
+Dim Arielsht As Worksheet
+Set Arielsht = Sheets("Ariel")
+Set Data_sht = Sheets("Data")
+Set startpoint = Data_sht.Range("A1")
+
+'Define the dynamic range
+lastrow = Data_sht.Cells(Data_sht.Rows.Count, startpoint.Column).End(xlUp).Row
+lastrowAriel = Arielsht.Range("a65536").End(xlUp).Row
+lastcolumn = Data_sht.Cells(startpoint.Row, Data_sht.Columns.Count).End(xlToLeft).Column
+lastcolumnAriel = Arielsht.UsedRange.Columns.Count
+j = lastcolumnAriel + 1
+
+Set DataRange = Data_sht.Range(startpoint, Data_sht.Cells(lastrow, lastcolumn))
+
+    For i = 2 To lastrowAriel
+        Arielsht.Cells(i, j) = WorksheetFunction.VLookup(Arielsht.Cells(i, 1), DataRange, j, False)
+        Arielsht.Cells(i, j) = Left(Arielsht.Cells(i, j), WorksheetFunction.Find("円（税込）", Arielsht.Cells(i, j)) - 1) * 1
+    Next
+    
+End Sub
+
+------------------------------------------------------------------------------------
+2021.1.10
+
+Create chart in a certain location with dynamic range and X and Y values set.
+
+Sub charttest()
+
+Dim productname As String
+Dim co As ChartObject
+Dim ct As Chart
+Dim sc1 As SeriesCollection
+Dim ser1 As Series
+Dim namerow As Integer
+
+Sheets("chart").Cells.Clear
+
+productname = InputBox("What product would you like to chart?")
+
+namerow = Application.WorksheetFunction.Match(productname, Sheets("Ariel").Range("a2:a100"), 0)
+
+Set co = Sheets("Chart").ChartObjects.Add(Sheets("chart").Range("B2").Left, Sheets("chart").Range("N2").Top, 500, 200)
+    
+co.Name = "Product" & productname & "price trend"
+    
+Set ct = co.Chart
+    
+    With ct
+    
+        .HasLegend = True
+        .HasTitle = True
+        
+        .ChartTitle.Text = "Product" & productname & "price trend"
+        
+        Set sc1 = .SeriesCollection
+        Set ser1 = sc1.NewSeries
+        
+        With ser1
+            .Name = Sheets("Ariel").Range("a1").Offset(namerow, 0).Value
+            .Values = Sheets("Ariel").Range(Sheets("Ariel").Range("a1").Offset(namerow, 1), Sheets("Ariel").Range("a1").Offset(namerow, 1).End(xlToRight))
+            .XValues = Sheets("Ariel").Range(Sheets("Ariel").Range("a1").Offset(0, 1), Sheets("Ariel").Range("a1").Offset(0, 1).End(xlToRight))
+            .ChartType = xlLine
+        End With
+            
+    End With
+    
+
+End Sub
